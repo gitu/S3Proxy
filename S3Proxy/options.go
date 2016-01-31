@@ -1,14 +1,21 @@
 package S3Proxy
 
-import "time"
+import (
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/dgrijalva/jwt-go"
+	"time"
+)
 
 type options struct {
 	CacheDir       string
 	BindAddress    string
 	Region         string
 	Bucket         string
-	Key            string
+	TokenKey       string
+	TokenMethod    jwt.SigningMethod
+	CookieMaxAge   int
 	ObjectCacheTTL time.Duration
+	AwsCredentials *credentials.Credentials
 }
 
 // Options is a globally available struct for storing runtime options
@@ -23,4 +30,8 @@ func LoadDefaultOptions() {
 	Options.ObjectCacheTTL = time.Duration(1 * time.Minute)
 	Options.Region = "eu-west-1"
 	Options.Bucket = "example-bucket"
+	Options.TokenKey = "test_keys/sample_key"
+	Options.TokenMethod = jwt.SigningMethodRS512
+	Options.CookieMaxAge = 3600
+	Options.AwsCredentials = credentials.NewSharedCredentials("", "default")
 }
