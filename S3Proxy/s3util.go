@@ -5,9 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/awslabs/aws-sdk-go/aws"
-	"github.com/awslabs/aws-sdk-go/aws/awserr"
-	"github.com/awslabs/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 type S3ProxyError struct {
@@ -28,35 +29,6 @@ func handleError(e error) *S3ProxyError {
 	return err
 }
 
-// S3GetBucketLocation returns the AWS region of the S3 Bucket
-func S3GetBucketLocation(bucket string) (string, *S3ProxyError) {
-	// Check if we have the bucket cached
-	bucketCacheItem := CacheBucketGet(bucket)
-	if bucketCacheItem != nil {
-		return bucketCacheItem.Location, nil
-	}
-	// Strange behaviour when hitting s3.amazonaws.com. Some regions work fine
-	// other return AuthorizationMalformedHeader. Specifying a region other than
-	// us-east-1 always works.
-	svc := s3.New(&aws.Config{Region: "eu-west-1"})
-	params := &s3.GetBucketLocationInput{
-		Bucket: aws.String(bucket),
-	}
-	resp, err := svc.GetBucketLocation(params)
-	if err != nil {
-		LogError(err)
-		return "", handleError(err)
-	}
-
-	// API returns the empty response when bucket location is US Standard
-	awsRegion := "us-east-1"
-	if resp.LocationConstraint != nil {
-		awsRegion = *resp.LocationConstraint
-	}
-	CacheBucketSet(bucket, awsRegion)
-	return awsRegion, nil
-}
-
 // S3GetObject returns path to the file on disk where the S3 object has been
 // downloaded to
 func S3GetObject(bucket, key, region string) (string, *S3ProxyError) {
@@ -65,7 +37,7 @@ func S3GetObject(bucket, key, region string) (string, *S3ProxyError) {
 	if objectCacheItem != nil {
 		return objectCacheItem.FilePath, nil
 	}
-	svc := s3.New(&aws.Config{Region: region})
+	svc := s3.New(session.New(), aws.NewConfig().WithRegion(region))
 	params := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),

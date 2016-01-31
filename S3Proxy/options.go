@@ -5,7 +5,9 @@ import "time"
 type options struct {
 	CacheDir       string
 	BindAddress    string
-	BucketCacheTTL time.Duration
+	Region         string
+	Bucket         string
+	Key            string
 	ObjectCacheTTL time.Duration
 }
 
@@ -18,6 +20,7 @@ var Options = options{}
 func LoadDefaultOptions() {
 	Options.CacheDir = "/tmp/S3Proxy/"
 	Options.BindAddress = ":9090"
-	Options.BucketCacheTTL = time.Duration(1 * time.Hour)
 	Options.ObjectCacheTTL = time.Duration(1 * time.Minute)
+	Options.Region = "eu-west-1"
+	Options.Bucket = "example-bucket"
 }

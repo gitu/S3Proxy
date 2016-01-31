@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/qstorey/S3Proxy/S3Proxy"
+	"github.com/gitu/S3Proxy/S3Proxy"
 	"net/http"
 )
 
