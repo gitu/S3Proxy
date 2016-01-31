@@ -2,13 +2,9 @@ language: go
 
 go:
   - 1.4.2
+  - 1.5.3
 
 install:
   - go get -v
 
 script: make test
-
-notifications:
-  slack:
-    rooms:
-      secure: BTGF1SHSRHP+I82V1t86tRrYYaFVs5ZaxLaB/xQkB/nkYjJ14isAxz5s1oIS1sTorhLIBWtHgo8OecJ2tOIKv/t/yY5dckr5nl+KDUzQ+hdQ9pBAKUkH9mYgRGyH+L9gSaprf6YfQK7/rlrAV2qx7xvjVwXO4GR+41nldSmK86A=
